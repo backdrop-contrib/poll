@@ -6,25 +6,6 @@
  * choice questions.
  */
 
-/**
- * Implements hook_help().
- */
-function poll_help($path, $arg) {
-  switch ($path) {
-    case 'admin/help#poll':
-      $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('The Poll module can be used to create simple surveys or questionnaires that display cumulative results. A poll is a good way to receive feedback from site users and community members. For more information, see the online handbook entry for the <a href="@poll">Poll module</a>.', array('@poll' => 'http://drupal.org/documentation/modules/poll/')) . '</p>';
-      $output .= '<h3>' . t('Uses') . '</h3>';
-      $output .= '<dl>';
-      $output .= '<dt>' . t('Creating a poll') . '</dt>';
-      $output .= '<dd>' . t('Users can create a poll by clicking on Poll on the <a href="@add-content">Add new content</a> page, and entering the question being posed, the answer choices, and beginning vote counts for each choice. The status (closed or active) and duration (length of time the poll remains active for new votes) can also be specified.', array('@add-content' => url('node/add'))) . '</dd>';
-      $output .= '<dt>' . t('Viewing polls') . '</dt>';
-      $output .= '<dd>' . t('You can visit the <a href="@poll">Polls</a> page to view all current polls, or alternately enable the <em>Most recent poll</em> block on the <a href="@blocks">Blocks administration page</a>. To vote in or view the results of a specific poll, you can click on the poll itself.', array('@poll' => url('poll'), '@blocks' => url('admin/structure/block'))) . '</dd>';
-      $output .= '</dl>';
-      return $output;
-  }
-}
 
 /**
  * Implements hook_theme().
@@ -40,11 +21,25 @@ function poll_theme() {
     ),
     'poll_results' => array(
       'template' => 'poll-results',
-      'variables' => array('raw_title' => NULL, 'results' => NULL, 'votes' => NULL, 'raw_links' => NULL, 'block' => NULL, 'nid' => NULL, 'vote' => NULL),
+      'variables' => array(
+        'raw_title' => NULL,
+        'results' => NULL,
+        'votes' => NULL,
+        'raw_links' => NULL,
+        'block' => NULL,
+        'nid' => NULL,
+        'vote' => NULL,
+      ),
     ),
     'poll_bar' => array(
       'template' => 'poll-bar',
-      'variables' => array('title' => NULL, 'votes' => NULL, 'total_votes' => NULL, 'vote' => NULL, 'block' => NULL),
+      'variables' => array(
+        'title' => NULL,
+        'votes' => NULL,
+        'total_votes' => NULL,
+        'vote' => NULL,
+        'block' => NULL,
+      ),
     ),
   );
   // The theme system automatically discovers the theme's functions and
@@ -191,7 +186,7 @@ function poll_node_info() {
       'base' => 'poll',
       'description' => t('A <em>poll</em> is a question with a set of possible responses. A <em>poll</em>, once created, automatically provides a simple running count of the number of votes received for each response.'),
       'title_label' => t('Question'),
-    )
+    ),
   );
 }
 
@@ -223,7 +218,7 @@ function poll_field_extra_fields() {
         'description' => t('Poll results'),
         'weight' => 0,
       ),
-    )
+    ),
   );
 
   return $extra;
@@ -316,16 +311,30 @@ function poll_form($node, &$form_state) {
   // Poll attributes
   $duration = array(
     // 1-6 days.
-    86400, 2 * 86400, 3 * 86400, 4 * 86400, 5 * 86400, 6 * 86400,
+    86400,
+    2 * 86400,
+    3 * 86400,
+    4 * 86400,
+    5 * 86400,
+    6 * 86400,
     // 1-3 weeks (7 days).
-    604800, 2 * 604800, 3 * 604800,
+    604800,
+    2 * 604800,
+    3 * 604800,
     // 1-3,6,9 months (30 days).
-    2592000, 2 * 2592000, 3 * 2592000, 6 * 2592000, 9 * 2592000,
+    2592000,
+    2 * 2592000,
+    3 * 2592000,
+    6 * 2592000,
+    9 * 2592000,
     // 1 year (365 days).
     31536000,
   );
-  $duration = array(0 => t('Unlimited')) + drupal_map_assoc($duration, 'format_interval');
-  $active = array(0 => t('Closed'), 1 => t('Active'));
+  $duration = array(0 => t('Unlimited')) + backdrop_map_assoc($duration, 'format_interval');
+  $active = array(
+    0 => t('Closed'),
+    1 => t('Active'),
+  );
 
   $form['settings'] = array(
     '#type' => 'fieldset',
@@ -401,15 +410,15 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
   );
 
   $form['chvotes'] = array(
-    '#type' => 'textfield',
+    '#type' => 'number',
     '#title' => $value !== '' ? t('Vote count for choice @label', array('@label' => $value)) : t('Vote count for new choice'),
     '#title_display' => 'invisible',
     '#default_value' => $votes,
     '#size' => 5,
-    '#maxlength' => 7,
+    '#max' => 7,
     '#parents' => array('choice', $key, 'chvotes'),
     '#access' => user_access('administer nodes'),
-    '#element_validate' => array('element_validate_integer'),
+    '#step' => 1,
   );
 
   $form['weight'] = array(
@@ -544,21 +553,21 @@ function poll_insert($node) {
 
   db_insert('poll')
     ->fields(array(
-      'nid' => $node->nid,
-      'runtime' => $node->runtime,
-      'active' => $node->active,
-    ))
+    'nid' => $node->nid,
+    'runtime' => $node->runtime,
+    'active' => $node->active,
+  ))
     ->execute();
 
   foreach ($node->choice as $choice) {
     if ($choice['chtext'] != '') {
       db_insert('poll_choice')
         ->fields(array(
-          'nid' => $node->nid,
-          'chtext' => $choice['chtext'],
-          'chvotes' => $choice['chvotes'],
-          'weight' => $choice['weight'],
-        ))
+        'nid' => $node->nid,
+        'chtext' => $choice['chtext'],
+        'chvotes' => $choice['chvotes'],
+        'weight' => $choice['weight'],
+      ))
         ->execute();
     }
   }
@@ -571,9 +580,9 @@ function poll_update($node) {
   // Update poll settings.
   db_update('poll')
     ->fields(array(
-      'runtime' => $node->runtime,
-      'active' => $node->active,
-    ))
+    'runtime' => $node->runtime,
+    'active' => $node->active,
+  ))
     ->condition('nid', $node->nid)
     ->execute();
 
@@ -584,16 +593,16 @@ function poll_update($node) {
       db_merge('poll_choice')
         ->key(array('chid' => $choice['chid']))
         ->fields(array(
-          'chtext' => $choice['chtext'],
-          'chvotes' => (int) $choice['chvotes'],
-          'weight' => $choice['weight'],
-        ))
+        'chtext' => $choice['chtext'],
+        'chvotes' => (int) $choice['chvotes'],
+        'weight' => $choice['weight'],
+      ))
         ->insertFields(array(
-          'nid' => $node->nid,
-          'chtext' => $choice['chtext'],
-          'chvotes' => (int) $choice['chvotes'],
-          'weight' => $choice['weight'],
-        ))
+        'nid' => $node->nid,
+        'chtext' => $choice['chtext'],
+        'chvotes' => (int) $choice['chvotes'],
+        'weight' => $choice['weight'],
+      ))
         ->execute();
     }
     else {
@@ -644,15 +653,23 @@ function poll_block_latest_poll_view($node) {
   $node->teaser = '';
 
   $links = array();
-  $links[] = array('title' => t('Older polls'), 'href' => 'poll', 'attributes' => array('title' => t('View the list of polls on this site.')));
+  $links[] = array(
+    'title' => t('Older polls'),
+    'href' => 'poll',
+    'attributes' => array('title' => t('View the list of polls on this site.')),
+  );
   if ($node->allowvotes) {
-    $links[] = array('title' => t('Results'), 'href' => 'node/' . $node->nid . '/results', 'attributes' => array('title' => t('View the current poll results.')));
+    $links[] = array(
+      'title' => t('Results'),
+      'href' => 'node/' . $node->nid . '/results',
+      'attributes' => array('title' => t('View the current poll results.')),
+    );
   }
 
   $node->links = $links;
 
   if (!empty($node->allowvotes)) {
-    $node->content['poll_view_voting'] = drupal_get_form('poll_view_voting', $node, TRUE);
+    $node->content['poll_view_voting'] = backdrop_get_form('poll_view_voting', $node, TRUE);
     $node->content['links'] = array(
       '#theme' => 'links',
       '#links' => $node->links,
@@ -672,7 +689,7 @@ function poll_block_latest_poll_view($node) {
  */
 function poll_view($node, $view_mode) {
   if (!empty($node->allowvotes) && empty($node->show_results)) {
-    $node->content['poll_view_voting'] = drupal_get_form('poll_view_voting', $node);
+    $node->content['poll_view_voting'] = backdrop_get_form('poll_view_voting', $node);
   }
   else {
     $node->content['poll_view_results'] = array('#markup' => poll_view_results($node, $view_mode));
@@ -756,12 +773,12 @@ function poll_vote($form, &$form_state) {
   global $user;
   db_insert('poll_vote')
     ->fields(array(
-      'nid' => $node->nid,
-      'chid' => $choice,
-      'uid' => $user->uid,
-      'hostname' => ip_address(),
-      'timestamp' => REQUEST_TIME,
-    ))
+    'nid' => $node->nid,
+    'chid' => $choice,
+    'uid' => $user->uid,
+    'hostname' => ip_address(),
+    'timestamp' => REQUEST_TIME,
+  ))
     ->execute();
 
   // Add one to the votes.
@@ -781,7 +798,7 @@ function poll_vote($form, &$form_state) {
     $_SESSION['poll_vote'][$node->nid] = $choice;
   }
 
-  drupal_set_message(t('Your vote was recorded.'));
+  backdrop_set_message(t('Your vote was recorded.'));
 
   // Return the user to whatever page they voted from.
 }
@@ -793,10 +810,10 @@ function poll_vote($form, &$form_state) {
  */
 function template_preprocess_poll_vote(&$variables) {
   $form = $variables['form'];
-  $variables['choice'] = drupal_render($form['choice']);
+  $variables['choice'] = backdrop_render($form['choice']);
   $variables['title'] = check_plain($form['#node']->title);
-  $variables['vote'] = drupal_render($form['vote']);
-  $variables['rest'] = drupal_render_children($form);
+  $variables['vote'] = backdrop_render($form['vote']);
+  $variables['rest'] = backdrop_render_children($form);
   $variables['block'] = $form['#block'];
   if ($variables['block']) {
     $variables['theme_hook_suggestions'][] = 'poll_vote__block';
@@ -808,7 +825,7 @@ function template_preprocess_poll_vote(&$variables) {
  */
 function poll_view_results($node, $view_mode, $block = FALSE) {
   // Make sure that choices are ordered by their weight.
-  uasort($node->choice, 'drupal_sort_weight');
+  backdrop_sort($node->choice, array('weight' => SORT_NUMERIC));
 
   // Count the votes and find the maximum.
   $total_votes = 0;
@@ -844,9 +861,9 @@ function poll_view_results($node, $view_mode, $block = FALSE) {
 function theme_poll_choices($variables) {
   $form = $variables['form'];
 
-  drupal_add_tabledrag('poll-choice-table', 'order', 'sibling', 'poll-weight');
+  backdrop_add_tabledrag('poll-choice-table', 'order', 'sibling', 'poll-weight');
 
-  $is_admin= user_access('administer nodes');
+  $is_admin = user_access('administer nodes');
   $delta = 0;
   $rows = array();
   $headers = array('', t('Choice'));
@@ -864,14 +881,14 @@ function theme_poll_choices($variables) {
     $row = array(
       'data' => array(
         array('class' => array('choice-flag')),
-        drupal_render($form[$key]['chtext']),
+        backdrop_render($form[$key]['chtext']),
       ),
       'class' => array('draggable'),
     );
     if ($is_admin) {
-      $row['data'][] = drupal_render($form[$key]['chvotes']);
+      $row['data'][] = backdrop_render($form[$key]['chvotes']);
     }
-    $row['data'][] = drupal_render($form[$key]['weight']);
+    $row['data'][] = backdrop_render($form[$key]['weight']);
 
     // Add any additional classes set on the row.
     if (!empty($form[$key]['#attributes']['class'])) {
@@ -882,7 +899,7 @@ function theme_poll_choices($variables) {
   }
 
   $output = theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => 'poll-choice-table')));
-  $output .= drupal_render_children($form);
+  $output .= backdrop_render_children($form);
   return $output;
 }
 
@@ -901,8 +918,8 @@ function theme_poll_choices($variables) {
 function template_preprocess_poll_results(&$variables) {
   $variables['links'] = theme('links__poll_results', array('links' => $variables['raw_links']));
   if (isset($variables['vote']) && $variables['vote'] > -1 && user_access('cancel own vote')) {
-    $elements = drupal_get_form('poll_cancel_form', $variables['nid']);
-    $variables['cancel_form'] = drupal_render($elements);
+    $elements = backdrop_get_form('poll_cancel_form', $variables['nid']);
+    $variables['cancel_form'] = backdrop_render($elements);
   }
   $variables['title'] = check_plain($variables['raw_title']);
 
@@ -943,7 +960,7 @@ function poll_cancel_form($form, &$form_state, $nid) {
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Cancel your vote'),
-    '#submit' => array('poll_cancel')
+    '#submit' => array('poll_cancel'),
   );
 
   return $form;
@@ -969,7 +986,7 @@ function poll_cancel($form, &$form_state) {
 
   unset($_SESSION['poll_vote'][$node->nid]);
 
-  drupal_set_message(t('Your vote was cancelled.'));
+  backdrop_set_message(t('Your vote was cancelled.'));
 }
 
 /**
@@ -1007,5 +1024,13 @@ function poll_rdf_mapping() {
         'rdftype' => array('sioc:Post', 'sioct:Poll'),
       ),
     ),
+  );
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function poll_autoload_info() {
+  return array(
   );
 }

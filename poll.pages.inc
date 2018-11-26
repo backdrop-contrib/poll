@@ -50,11 +50,21 @@ function poll_page() {
  */
 function poll_votes($node) {
   $votes_per_page = 20;
-  drupal_set_title($node->title);
+  backdrop_set_title($node->title);
 
-  $header[] = array('data' => t('Visitor'), 'field' => 'u.name');
-  $header[] = array('data' => t('Vote'), 'field' => 'pc.chtext');
-  $header[] = array('data' => t('Timestamp'), 'field' => 'pv.timestamp', 'sort' => 'desc');
+  $header[] = array(
+    'data' => t('Visitor'),
+    'field' => 'u.name',
+  );
+  $header[] = array(
+    'data' => t('Vote'),
+    'field' => 'pc.chtext',
+  );
+  $header[] = array(
+    'data' => t('Timestamp'),
+    'field' => 'pv.timestamp',
+    'sort' => 'desc',
+  );
 
   $select = db_select('poll_vote', 'pv')->extend('PagerDefault')->extend('TableSort');
   $select->join('poll_choice', 'pc', 'pv.chid = pc.chid');
@@ -91,7 +101,7 @@ function poll_votes($node) {
  * Callback for the 'results' tab for polls you can vote on
  */
 function poll_results($node) {
-  drupal_set_title($node->title);
+  backdrop_set_title($node->title);
   $node->show_results = TRUE;
   return node_show($node);
 }
