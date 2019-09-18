@@ -415,7 +415,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
     '#title_display' => 'invisible',
     '#default_value' => $votes,
     '#size' => 5,
-    '#max' => 7,
+    '#max' => 99999,
     '#parents' => array('choice', $key, 'chvotes'),
     '#access' => user_access('administer nodes'),
     '#step' => 1,
