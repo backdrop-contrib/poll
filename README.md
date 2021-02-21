@@ -38,8 +38,8 @@ complete text.
 Maintainers
 -----------
 
-Seeking maintainers
-
 Ported by docwilmot (https://github.com/docwilmot/)
+
+Maintained by [Alan Mels](https://github.com/alanmels)
 
 Poll module was originally a core Drupal module.
