@@ -410,15 +410,15 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
   );
 
   $form['chvotes'] = array(
-    '#type' => 'number',
+    '#type' => 'textfield',
     '#title' => $value !== '' ? t('Vote count for choice @label', array('@label' => $value)) : t('Vote count for new choice'),
     '#title_display' => 'invisible',
     '#default_value' => $votes,
     '#size' => 5,
-    '#max' => 99999,
+    '#maxlength' => 7,
     '#parents' => array('choice', $key, 'chvotes'),
     '#access' => user_access('administer nodes'),
-    '#step' => 1,
+    '#element_validate' => array('element_validate_integer'),
   );
 
   $form['weight'] = array(
@@ -787,7 +787,9 @@ function poll_vote($form, &$form_state) {
     ->condition('chid', $choice)
     ->execute();
 
-  cache_clear_all();
+  backdrop_flush_all_caches();
+#  cache('layout_path')->flush();
+#    cache('page')->flush();
 
   if (!$user->uid) {
     // The vote is recorded so the user gets the result view instead of the
@@ -917,6 +919,7 @@ function theme_poll_choices($variables) {
  */
 function template_preprocess_poll_results(&$variables) {
   $variables['links'] = theme('links__poll_results', array('links' => $variables['raw_links']));
+  sdpm($variables);
   if (isset($variables['vote']) && $variables['vote'] > -1 && user_access('cancel own vote')) {
     $elements = backdrop_get_form('poll_cancel_form', $variables['nid']);
     $variables['cancel_form'] = backdrop_render($elements);

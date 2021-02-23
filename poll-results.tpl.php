@@ -20,7 +20,7 @@
  */
 ?>
 <div class="poll">
-  <?php print $results; ?>
+    <?php sdpm($results); print $results; ?>
   <div class="total">
     <?php print t('Total votes: @votes', array('@votes' => $votes)); ?>
   </div>
