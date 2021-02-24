@@ -20,7 +20,7 @@
   <div class="vote-form">
     <div class="choices">
       <?php if ($block): ?>
-        <h3 class="title"><?php print $title; ?></h3>
+        <div class="title"><?php print $title; ?></div>
       <?php endif; ?>
       <?php print $choice; ?>
     </div>

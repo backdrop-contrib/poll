@@ -19,7 +19,7 @@
 ?>
 
 <div class="poll">
-  <h3 class="title"><?php print $title ?></h3>
+  <div class="title"><?php print $title ?></div>
   <?php print $results ?>
   <div class="total">
     <?php print t('Total votes: @votes', array('@votes' => $votes)); ?>

@@ -30,6 +30,7 @@
   display: table;
 }
 .poll .vote-form .title {
+  font-weight: bold;
   margin-bottom: 15px;
 }
 
