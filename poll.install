@@ -154,9 +154,9 @@ function poll_schema() {
 function poll_install() {
   $poll_node_type = array(
     'type' => 'poll',
-    'name' => t('Poll'),
+    'name' => st('Poll'),
     'base' => 'poll',
-    'description' => t('A <em>poll</em> is a question with a set of possible responses. A <em>poll</em>, once created, automatically provides a simple running count of the number of votes received for each response.'),
+    'description' => st('A <em>poll</em> is a question with a set of possible responses. A <em>poll</em>, once created, automatically provides a simple running count of the number of votes received for each response.'),
     'custom' => 1,
     'modified' => 1,
     'locked' => 0,
@@ -168,4 +168,4 @@ function poll_install() {
 
   $poll_node_type = node_type_set_defaults($poll_node_type);
   node_type_save($poll_node_type);
- }
+}

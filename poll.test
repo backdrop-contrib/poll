@@ -5,6 +5,9 @@
  * Tests for poll.module.
  */
 
+/**
+ * Class PollTestCase.
+ */
 class PollTestCase extends BackdropWebTestCase {
 
   /**
@@ -104,7 +107,9 @@ class PollTestCase extends BackdropWebTestCase {
     }
     return array($edit, count($already_submitted_choices) + count($new_choices));
   }
-
+  /**
+   * Function _generateChoices
+   */
   function _generateChoices($count = 7) {
     $choices = array();
     for ($i = 1; $i <= $count; $i++) {
@@ -127,7 +132,7 @@ class PollTestCase extends BackdropWebTestCase {
    * @param $preview
    *   (optional) Whether to also check the poll preview.
    *
-   * @see PollTestCase::_pollGenerateEdit()
+   * @see PollTestCase::_pollGenerateEdit().
    */
   function assertPollChoiceOrder(array $choices, $index = 0, $preview = FALSE) {
     $expected = array();
@@ -147,7 +152,7 @@ class PollTestCase extends BackdropWebTestCase {
     }
     ksort($expected);
 
-    // Verify DOM order of poll choices (i.e., #weight of form elements).
+    // Verify DOM order of poll choices (i.e. #weight of form elements).
     $elements = $this->xpath('//input[starts-with(@name, :prefix) and contains(@name, :suffix)]', array(
       ':prefix' => 'choice[chid:',
       ':suffix' => '][chtext]',
@@ -173,14 +178,18 @@ class PollTestCase extends BackdropWebTestCase {
       }
     }
   }
-
+  /**
+   * Function pollUpdate().
+   */
   function pollUpdate($nid, $title, $edit) {
     // Edit the poll node.
     $this->backdropPost('node/' . $nid . '/edit', $edit, t('Save'));
     $this->assertText(t('@type @title has been updated.', array('@type' => node_type_get_name('poll'), '@title' => $title)), 'Poll has been updated.');
   }
 }
-
+/**
+ * class PollCreateTestCase.
+ */
 class PollCreateTestCase extends PollTestCase {
   public static function getInfo() {
     return array(
@@ -189,11 +198,15 @@ class PollCreateTestCase extends PollTestCase {
       'group' => 'Poll'
     );
   }
-
+  /**
+   * function setUp().
+   */
   function setUp() {
     parent::setUp('poll');
   }
-
+  /**
+   * function testPollCreate().
+   */
   function testPollCreate() {
     $title = $this->randomName();
     $choices = $this->_generateChoices(7);
@@ -228,10 +241,10 @@ class PollCreateTestCase extends PollTestCase {
     $this->clickLink($title);
     $this->assertText($new_option, 'New option found.');
 
-    $option = $this->xpath('//article[@id="node-' . $node->nid .'"]//div[@class="poll"]//div[@class="text"]');
+    $option = $this->xpath('//article[@id="node-' . $node->nid . '"]//div[@class="poll"]//div[@class="text"]');
     $this->assertEqual(end($option), $new_option, 'Last item is equal to new option.');
 
-    $votes = $this->xpath('//article[@id="node-' . $node->nid .'"]//div[@class="poll"]//div[@class="percent"]');
+    $votes = $this->xpath('//article[@id="node-' . $node->nid . '"]//div[@class="poll"]//div[@class="percent"]');
     $this->assertTrue(strpos(end($votes), $vote_count) > 0, "Votes saved.");
   }
 

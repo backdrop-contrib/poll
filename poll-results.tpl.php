@@ -18,6 +18,7 @@
  *
  * @ingroup themeable
  */
+ 
 ?>
 <div class="poll">
     <?php print $results; ?>

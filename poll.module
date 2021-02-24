@@ -386,7 +386,9 @@ function poll_more_choices_submit($form, &$form_state) {
   unset($form_state['input']['choice']);
   $form_state['rebuild'] = TRUE;
 }
-
+/**
+ * Form constructor for _poll_choice_form.
+ */
 function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight = 0, $size = 10) {
   $form = array(
     '#tree' => TRUE,
@@ -403,7 +405,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
 
   $form['chtext'] = array(
     '#type' => 'textfield',
-    '#title' => $value !== '' ? t('Choice label') : t('New choice label'),
+    '#title' => check_plain($value) !== '' ? t('Choice label') : t('New choice label'),
     '#title_display' => 'invisible',
     '#default_value' => $value,
     '#parents' => array('choice', $key, 'chtext'),
@@ -411,7 +413,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
 
   $form['chvotes'] = array(
     '#type' => 'textfield',
-    '#title' => $value !== '' ? t('Vote count for choice @label', array('@label' => $value)) : t('Vote count for new choice'),
+    '#title' => check_plain($value) !== '' ? t('Vote count for choice @label', array('@label' => $value)) : t('Vote count for new choice'),
     '#title_display' => 'invisible',
     '#default_value' => $votes,
     '#size' => 5,
@@ -423,7 +425,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
 
   $form['weight'] = array(
     '#type' => 'weight',
-    '#title' => $value !== '' ? t('Weight for choice @label', array('@label' => $value)) : t('Weight for new choice'),
+    '#title' => check_plain($value) !== '' ? t('Weight for choice @label', array('@label' => $value)) : t('Weight for new choice'),
     '#title_display' => 'invisible',
     '#default_value' => $weight,
     '#delta' => $size,
