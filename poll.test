@@ -39,7 +39,7 @@ class PollTestCase extends BackdropWebTestCase {
     $edit['choice[new:0][chvotes]'] = $this->randomString(7);
     $this->backdropPost(NULL, $edit, t('Save'));
     $this->assertText(t('Negative values are not allowed.'));
-    $this->assertText(t('Vote count for new choice must be an integer.'));
+    $this->assertText(t('Vote count for new choice must be a number.'));
 
     // Repeat steps for initializing the state of the internal browser.
     $this->backdropLogin($web_user);
@@ -228,10 +228,10 @@ class PollCreateTestCase extends PollTestCase {
     $this->clickLink($title);
     $this->assertText($new_option, 'New option found.');
 
-    $option = $this->xpath('//div[@id="node-1"]//div[@class="poll"]//div[@class="text"]');
+    $option = $this->xpath('//article[@id="node-' . $node->nid .'"]//div[@class="poll"]//div[@class="text"]');
     $this->assertEqual(end($option), $new_option, 'Last item is equal to new option.');
 
-    $votes = $this->xpath('//div[@id="node-1"]//div[@class="poll"]//div[@class="percent"]');
+    $votes = $this->xpath('//article[@id="node-' . $node->nid .'"]//div[@class="poll"]//div[@class="percent"]');
     $this->assertTrue(strpos(end($votes), $vote_count) > 0, "Votes saved.");
   }
 
@@ -380,21 +380,24 @@ class PollBlockTestCase extends PollTestCase {
   function setUp() {
     parent::setUp('poll');
 
-    // Create and login user
-    $admin_user = $this->backdropCreateUser(array('administer blocks'));
+    // Create and login admin user.
+    $admin_user = $this->backdropCreateUser(array(
+      'access administration pages',
+      'administer layouts',
+      'access user profiles',
+      'edit any page content',
+      'administer nodes',
+    ));
     $this->backdropLogin($admin_user);
   }
 
   function testRecentBlock() {
-    // Set block title to confirm that the interface is available.
-    $this->backdropPost('admin/structure/block/manage/poll/recent/configure', array('title' => $this->randomName(8)), t('Save block'));
-    $this->assertText(t('The block configuration has been saved.'), 'Block configuration set.');
-
-    // Set the block to a region to confirm block is available.
+    $this->backdropGet('admin/structure/layouts/manage/default');
+    $this->clickLink(t('Add block'), 3);
+    $this->clickLink(t('Most recent poll'));
     $edit = array();
-    $edit['blocks[poll_recent][region]'] = 'footer';
-    $this->backdropPost('admin/structure/block', $edit, t('Save blocks'));
-    $this->assertText(t('The block settings have been updated.'), 'Block successfully move to footer region.');
+    $this->backdropPost(NULL, $edit, t('Add block'));
+    $this->backdropPost(NULL, $edit, t('Save layout'));
 
     // Create a poll which should appear in recent polls block.
     $title = $this->randomName();
@@ -493,7 +496,7 @@ class PollVoteCheckHostname extends PollTestCase {
     $this->backdropLogin($this->admin_user);
 
     // Allow anonymous users to vote on polls.
-    user_role_change_permissions(DRUPAL_ANONYMOUS_RID, array(
+    user_role_change_permissions(BACKDROP_ANONYMOUS_RID, array(
       'access content' => TRUE,
       'vote on polls' => TRUE,
       'cancel own vote' => TRUE,
@@ -685,7 +688,7 @@ class PollTokenReplaceTestCase extends PollTestCase {
     $tests['[node:poll-winner]'] = filter_xss($poll->choice[1]['chtext']);
     $tests['[node:poll-winner-votes]'] = 2;
     $tests['[node:poll-winner-percent]'] = 50;
-    $tests['[node:poll-duration]'] = format_interval($poll->runtime, 1, $language->language);
+    $tests['[node:poll-duration]'] = format_interval($poll->runtime, 1, $language->langcode);
 
     // Test to make sure that we generated something for each token.
     $this->assertFalse(in_array(0, array_map('strlen', $tests)), 'No empty tokens generated.');
@@ -858,7 +861,7 @@ class PollTranslateTestCase extends PollTestCase {
     // Set the poll's first choice count to 200.
     $edit['choice[chid:1][chvotes]'] = 200;
     // Set the language to Dutch.
-    $edit['language'] = 'nl';
+    $edit['langcode'] = 'nl';
     $this->backdropPost(NULL, $edit, t('Save'));
 
     // Translate the Dutch poll.

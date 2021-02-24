@@ -1,9 +1,3 @@
-[PollTestCase]
-name = PollTestCase
-description = PollTestCase
-group = poll
-file = poll.test
-
 [PollCreateTestCase]
 name = Poll create
 description = Adds "more choices", previews and creates a poll.
@@ -57,4 +51,3 @@ name = Poll translation
 description = Test the poll translation logic.
 group = Poll
 file = poll.test
-
