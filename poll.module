@@ -787,9 +787,7 @@ function poll_vote($form, &$form_state) {
     ->condition('chid', $choice)
     ->execute();
 
-  backdrop_flush_all_caches();
-#  cache('layout_path')->flush();
-#    cache('page')->flush();
+  cache('cache_entity_node')->flush();
 
   if (!$user->uid) {
     // The vote is recorded so the user gets the result view instead of the
@@ -988,7 +986,7 @@ function poll_cancel($form, &$form_state) {
     ->execute();
 
   unset($_SESSION['poll_vote'][$node->nid]);
-
+  cache('cache_entity_node')->flush();
   backdrop_set_message(t('Your vote was cancelled.'));
 }
 
