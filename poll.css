@@ -29,9 +29,10 @@
   margin: 0 auto;
   display: table;
 }
-.poll .vote-form .choices .title {
-  font-weight: bold;
+.poll .vote-form .title {
+  margin-bottom: 15px;
 }
+
 .node-form #edit-poll-more {
   margin: 0;
 }
