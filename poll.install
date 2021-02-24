@@ -162,7 +162,7 @@ function poll_install() {
     'locked' => 0,
     'is_new' => TRUE,
     'settings' => array(
-      'promote_enabled' => FALSE,
+      'promote_enabled' => TRUE,
     ),
   );
 
