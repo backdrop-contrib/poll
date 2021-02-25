@@ -800,7 +800,7 @@ function poll_vote($form, &$form_state) {
     $_SESSION['poll_vote'][$node->nid] = $choice;
   }
 
-  backdrop_set_message(t('Your vote was recorded.'));
+  backdrop_set_message(t('Your vote has been recorded.'));
 
   // Return the user to whatever page they voted from.
 }
@@ -989,7 +989,7 @@ function poll_cancel($form, &$form_state) {
 
   unset($_SESSION['poll_vote'][$node->nid]);
   cache('cache_entity_node')->flush();
-  backdrop_set_message(t('Your vote was cancelled.'));
+  backdrop_set_message(t('Your vote has been cancelled.'));
 }
 
 /**
