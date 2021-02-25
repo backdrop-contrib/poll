@@ -29,7 +29,7 @@
   margin: 0 auto;
   display: table;
 }
-.poll .vote-form .title {
+.poll .title {
   font-weight: bold;
   margin-bottom: 15px;
 }
