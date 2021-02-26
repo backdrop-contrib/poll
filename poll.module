@@ -276,7 +276,7 @@ function poll_form($node, &$form_state) {
     $delta = count($node->choice);
     foreach ($node->choice as $chid => $choice) {
       $key = 'chid:' . $chid;
-      $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, $choice['chid'], $choice['chtext'], $choice['chvotes'], $choice['weight'], $choice_count);
+      $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, $choice['chid'], $choice['chtext'], $choice['chvotes'], $choice['color'], $choice['weight'], $choice_count);
       $weight = max($choice['weight'], $weight);
     }
   }
@@ -287,7 +287,7 @@ function poll_form($node, &$form_state) {
     $key = 'new:' . ($delta - $existing_delta);
     // Increase the weight of each new choice.
     $weight++;
-    $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, NULL, '', 0, $weight, $choice_count);
+    $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, NULL, '', 0, $choice['color'], $weight, $choice_count);
   }
 
   // We name our button 'poll_more' to avoid conflicts with other modules using
@@ -389,13 +389,12 @@ function poll_more_choices_submit($form, &$form_state) {
 /**
  * Form constructor for _poll_choice_form.
  */
-function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight = 0, $size = 10) {
+function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $color = '#000000', $weight = 0, $size = 10) {
   $form = array(
     '#tree' => TRUE,
     '#weight' => $weight,
   );
-
-  // We'll manually set the #parents property of these fields so that
+  // We'll manually set the #parents property of these fields so tha
   // their values appear in the $form_state['values']['choice'] array.
   $form['chid'] = array(
     '#type' => 'value',
@@ -421,6 +420,16 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $weight 
     '#parents' => array('choice', $key, 'chvotes'),
     '#access' => user_access('administer nodes'),
     '#element_validate' => array('element_validate_integer'),
+  );
+  
+  $form['color'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Color'),
+    '#title_display' => 'invisible',
+    '#default_value' => $color ? $color : '#000000',
+    '#size' => 7,
+    '#maxlength' => 7,
+    '#parents' => array('choice', $key, 'color'),
   );
 
   $form['weight'] = array(
@@ -508,7 +517,7 @@ function poll_load($nodes) {
     // Load the appropriate choices into the $poll object.
     $poll->choice = db_select('poll_choice', 'c')
       ->addTag('translatable')
-      ->fields('c', array('chid', 'chtext', 'chvotes', 'weight'))
+      ->fields('c', array('chid', 'chtext', 'chvotes', 'color', 'weight'))
       ->condition('c.nid', $node->nid)
       ->orderBy('weight')
       ->execute()->fetchAllAssoc('chid', PDO::FETCH_ASSOC);
@@ -568,6 +577,7 @@ function poll_insert($node) {
         'nid' => $node->nid,
         'chtext' => $choice['chtext'],
         'chvotes' => $choice['chvotes'],
+        'color' => $choice['color'],
         'weight' => $choice['weight'],
       ))
         ->execute();
@@ -597,12 +607,14 @@ function poll_update($node) {
         ->fields(array(
         'chtext' => $choice['chtext'],
         'chvotes' => (int) $choice['chvotes'],
+        'color' => $choice['color'],
         'weight' => $choice['weight'],
       ))
         ->insertFields(array(
         'nid' => $node->nid,
         'chtext' => $choice['chtext'],
         'chvotes' => (int) $choice['chvotes'],
+        'color' => $choice['color'],
         'weight' => $choice['weight'],
       ))
         ->execute();
@@ -843,7 +855,7 @@ function poll_view_results($node, $view_mode, $block = FALSE) {
   foreach ($node->choice as $i => $choice) {
     if (!empty($choice['chtext'])) {
       $chvotes = isset($choice['chvotes']) ? $choice['chvotes'] : NULL;
-      $poll_results .= theme('poll_bar', array('title' => $choice['chtext'], 'votes' => $chvotes, 'total_votes' => $total_votes, 'vote' => isset($node->vote) && $node->vote == $i, 'block' => $block));
+      $poll_results .= theme('poll_bar', array('title' => $choice['chtext'], 'votes' => $chvotes, 'color' => $choice['color'], 'total_votes' => $total_votes, 'vote' => isset($node->vote) && $node->vote == $i, 'block' => $block));
     }
   }
 
@@ -872,6 +884,7 @@ function theme_poll_choices($variables) {
   if ($is_admin) {
     $headers[] = t('Vote count');
   }
+  $headers[] = t('Color');
   $headers[] = t('Weight');
 
   foreach (element_children($form) as $key) {
@@ -890,13 +903,18 @@ function theme_poll_choices($variables) {
     if ($is_admin) {
       $row['data'][] = backdrop_render($form[$key]['chvotes']);
     }
+    /*
+    if (module_exists('color')) {
+      $row['data']['color'] = backdrop_render(color_get_color_element('', $key, $form[$key]['color']));
+    }
+    */
+    $row['data'][] = backdrop_render($form[$key]['color']);
     $row['data'][] = backdrop_render($form[$key]['weight']);
 
     // Add any additional classes set on the row.
     if (!empty($form[$key]['#attributes']['class'])) {
       $row['class'] = array_merge($row['class'], $form[$key]['#attributes']['class']);
     }
-
     $rows[] = $row;
   }
 
@@ -965,7 +983,6 @@ function poll_cancel_form($form, &$form_state, $nid) {
     '#value' => t('Cancel your vote'),
     '#submit' => array('poll_cancel'),
   );
-
   return $form;
 }
 

@@ -34,7 +34,7 @@ class PollTestCase extends BackdropWebTestCase {
     // Get the form first to initialize the state of the internal browser.
     $this->backdropGet('node/add/poll');
 
-    // Prepare a form w  sdpm($variables);ith two choices.
+    // Prepare a form with two choices.
     list($edit, $index) = $this->_pollGenerateEdit($title, $choices);
 
     // Verify that the vote count element only allows non-negative integers.

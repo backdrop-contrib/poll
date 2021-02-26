@@ -51,3 +51,9 @@ td.poll-chtext {
 td.poll-chvotes .form-text {
   width: 85%;
 }
+#poll-choice-wrapper input[type="color"] {
+    height: 35px;
+    width: 35px;
+    padding: 0px;
+    cursor: pointer;
+}
