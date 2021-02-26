@@ -183,13 +183,15 @@ function poll_install() {
  * Implements hook_update_N().
  */
 function poll_update_1100() {
-  $color = array(
-    'type' => 'varchar',
-    'length' => 7,
-    'not null' => TRUE,
-    'default' => '#000000',
-    'description' => 'The color-code for the choice progress bar.',
-    'translatable' => TRUE,
-  );
-  db_add_field('poll_choice', 'color', $color);
+  if (!db_field_exists('poll_choice', 'color')) {
+    $color = array(
+      'type' => 'varchar',
+      'length' => 7,
+      'not null' => TRUE,
+      'default' => '#000000',
+      'description' => 'The color-code for the choice progress bar.',
+      'translatable' => TRUE,
+    );
+    db_add_field('poll_choice', 'color', $color);
+  }
 }
