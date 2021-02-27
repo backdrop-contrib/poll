@@ -389,7 +389,7 @@ function poll_more_choices_submit($form, &$form_state) {
 }
 
 function _poll_choice_random_color() {
-  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+  $colors = array('#000000', '#808080', '#C0C0C0', '#800000', '#FF0000 ', '#800080', '#FF00FF', '#008000', '#00FF00', '#808000', '#FFFF00', '#000080', '#0000FF', '#008080', '#00FFFF');
   return array_rand(array_flip($colors));
 }
 
@@ -431,7 +431,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $color =
   );
 
   $form['color'] = array(
-    '#type' => 'textfield',
+    '#type' => 'color',
     '#title' => t('Color'),
     '#title_display' => 'invisible',
     '#default_value' => $color ? $color : _poll_choice_random_color(),
@@ -489,12 +489,6 @@ function poll_validate($node, $form) {
       }
       if (isset($choice['chvotes']) && $choice['chvotes'] < 0) {
         form_set_error("choice][$i][chvotes", t('Negative values are not allowed.'));
-      }
-      $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
-      if (!in_array($choice['color'], $colors, true)) {
-        if ($choice['color'][0] != '#') {
-          form_set_error("choice][$i][color", t('You must use HTML-recognizable colors such as <em>red</em> or <em>#99CC66</em>.'));
-        }
       }
     }
     if ($realchoices < 2) {
