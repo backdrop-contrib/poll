@@ -306,7 +306,7 @@ function poll_form($node, &$form_state) {
     ),
   );
 
-  // Poll attributes
+  // Poll attributes.
   $duration = array(
     // 1-6 days.
     86400,
@@ -481,7 +481,7 @@ function poll_node_form_submit(&$form, &$form_state) {
  */
 function poll_validate($node, $form) {
   if (isset($node->title)) {
-    // Ensure at least two options and validate amount of votes and bar colors.
+    // Make sure there are at least two options and validate amount of votes.
     $realchoices = 0;
     foreach ($node->choice as $i => $choice) {
       if ($choice['chtext'] != '') {
@@ -776,7 +776,7 @@ function poll_view_voting($form, &$form_state, $node, $block = FALSE) {
 }
 
 /**
- * Validation function for processing votes
+ * Validation function for processing votes.
  */
 function poll_view_voting_validate($form, &$form_state) {
   if (empty($form_state['values']['choice'])) {
@@ -910,11 +910,6 @@ function theme_poll_choices($variables) {
     if ($is_admin) {
       $row['data'][] = backdrop_render($form[$key]['chvotes']);
     }
-    /*
-    if (module_exists('color')) {
-      $row['data']['color'] = backdrop_render(color_get_color_element('', $key, $form[$key]['color']));
-    }
-    */
     $row['data'][] = backdrop_render($form[$key]['color']);
     $row['data'][] = backdrop_render($form[$key]['weight']);
 
