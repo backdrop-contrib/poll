@@ -287,7 +287,7 @@ function poll_form($node, &$form_state) {
     $key = 'new:' . ($delta - $existing_delta);
     // Increase the weight of each new choice.
     $weight++;
-    $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, NULL, '', 0, $choice['color'], $weight, $choice_count);
+    $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, NULL, '', 0, _poll_choice_random_color(), $weight, $choice_count);
   }
 
   $form['choice_wrapper']['poll_more'] = array(
@@ -386,11 +386,14 @@ function poll_more_choices_submit($form, &$form_state) {
   $form_state['node']->choice = array_values($form_state['values']['choice']);
   unset($form_state['input']['choice']);
   $form_state['rebuild'] = TRUE;
-
-  // Randomize the bar color.
-  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
-  $form_state['node']->choice[$count-1]['color'] = $colors[array_rand($colors)];
 }
+
+function _poll_choice_random_color() {
+  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+  return array_rand(array_flip($colors));
+}
+  
+
 /**
  * Form constructor for _poll_choice_form.
  */
@@ -432,7 +435,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $color =
     '#type' => 'textfield',
     '#title' => t('Color'),
     '#title_display' => 'invisible',
-    '#default_value' => $color ? $color : $colors[array_rand($colors)],
+    '#default_value' => $color ? $color : _poll_choice_random_color(),
     '#size' => 7,
     '#maxlength' => 7,
     '#parents' => array('choice', $key, 'color'),
