@@ -290,8 +290,6 @@ function poll_form($node, &$form_state) {
     $form['choice_wrapper']['choice'][$key] = _poll_choice_form($key, NULL, '', 0, $choice['color'], $weight, $choice_count);
   }
 
-  // We name our button 'poll_more' to avoid conflicts with other modules using
-  // Ajax-enabled buttons with the id 'more'.
   $form['choice_wrapper']['poll_more'] = array(
     '#type' => 'submit',
     '#value' => t('More choices'),
@@ -373,11 +371,14 @@ function poll_form($node, &$form_state) {
  * return just the changed part of the form.
  */
 function poll_more_choices_submit($form, &$form_state) {
+  $count = count($form_state['values']['choice']);
+
   // If this is a Ajax POST, add 1, otherwise add 5 more choices to the form.
   if ($form_state['values']['poll_more']) {
     $n = $_GET['q'] == 'system/ajax' ? 1 : 5;
-    $form_state['choice_count'] = count($form_state['values']['choice']) + $n;
+    $form_state['choice_count'] = $count + $n;
   }
+
   // Renumber the choices. This invalidates the corresponding key/value
   // associations in $form_state['input'], so clear that out. This requires
   // poll_form() to rebuild the choices with the values in
@@ -385,6 +386,10 @@ function poll_more_choices_submit($form, &$form_state) {
   $form_state['node']->choice = array_values($form_state['values']['choice']);
   unset($form_state['input']['choice']);
   $form_state['rebuild'] = TRUE;
+
+  // Randomize the bar color.
+  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+  $form_state['node']->choice[$count-1]['color'] = $colors[array_rand($colors)];
 }
 /**
  * Form constructor for _poll_choice_form.
@@ -421,12 +426,13 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $color =
     '#access' => user_access('administer nodes'),
     '#element_validate' => array('element_validate_integer'),
   );
-  
+
+  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
   $form['color'] = array(
     '#type' => 'textfield',
     '#title' => t('Color'),
     '#title_display' => 'invisible',
-    '#default_value' => $color ? $color : '#000000',
+    '#default_value' => $color ? $color : $colors[array_rand($colors)],
     '#size' => 7,
     '#maxlength' => 7,
     '#parents' => array('choice', $key, 'color'),
@@ -473,7 +479,7 @@ function poll_node_form_submit(&$form, &$form_state) {
  */
 function poll_validate($node, $form) {
   if (isset($node->title)) {
-    // Check for at least two options and validate amount of votes.
+    // Ensure at least two options and validate amount of votes and bar colors.
     $realchoices = 0;
     foreach ($node->choice as $i => $choice) {
       if ($choice['chtext'] != '') {
@@ -482,8 +488,13 @@ function poll_validate($node, $form) {
       if (isset($choice['chvotes']) && $choice['chvotes'] < 0) {
         form_set_error("choice][$i][chvotes", t('Negative values are not allowed.'));
       }
+      $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+      if (!in_array($choice['color'], $colors, true)) {
+        if ($choice['color'][0] != '#') {
+          form_set_error("choice][$i][color", t('You must use HTML-recognizable colors such as <em>red</em> or <em>#99CC66</em>.'));
+        }
+      }
     }
-
     if ($realchoices < 2) {
       form_set_error("choice][$realchoices][chtext", t('You must fill in at least two choices.'));
     }
