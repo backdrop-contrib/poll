@@ -388,7 +388,7 @@ function poll_more_choices_submit($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
 
   // Randomize the bar color.
-  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
   $form_state['node']->choice[$count-1]['color'] = $colors[array_rand($colors)];
 }
 /**
@@ -427,7 +427,7 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $color =
     '#element_validate' => array('element_validate_integer'),
   );
 
-  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
   $form['color'] = array(
     '#type' => 'textfield',
     '#title' => t('Color'),
@@ -488,7 +488,7 @@ function poll_validate($node, $form) {
       if (isset($choice['chvotes']) && $choice['chvotes'] < 0) {
         form_set_error("choice][$i][chvotes", t('Negative values are not allowed.'));
       }
-      $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
+      $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
       if (!in_array($choice['color'], $colors, true)) {
         if ($choice['color'][0] != '#') {
           form_set_error("choice][$i][color", t('You must use HTML-recognizable colors such as <em>red</em> or <em>#99CC66</em>.'));
