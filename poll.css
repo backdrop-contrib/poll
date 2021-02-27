@@ -7,11 +7,6 @@
   margin: 1px 0;
   background-color: #ddd;
 }
-.poll .bar .foreground {
-  background-color: #000;
-  height: 1em;
-  float: left; /* LTR */
-}
 .poll .links {
   text-align: center;
 }
