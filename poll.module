@@ -392,7 +392,7 @@ function _poll_choice_random_color() {
   $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fushsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
   return array_rand(array_flip($colors));
 }
-  
+
 
 /**
  * Form constructor for _poll_choice_form.
@@ -430,7 +430,6 @@ function _poll_choice_form($key, $chid = NULL, $value = '', $votes = 0, $color =
     '#element_validate' => array('element_validate_integer'),
   );
 
-  $colors = array('black', 'gray', 'silver', 'maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua');
   $form['color'] = array(
     '#type' => 'textfield',
     '#title' => t('Color'),
