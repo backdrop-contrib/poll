@@ -668,12 +668,17 @@ function poll_block_latest_poll_view($node) {
   // as the node output.
   $node = clone $node;
   unset($node->content);
-
-  // No 'read more' link.
-  $node->readmore = FALSE;
-  $node->teaser = '';
-
+  
   $links = array();
+  if ($node->comment == '2') {
+    $links[] = array(
+      'title' => t('Add comment'),
+      'href' => $node->path['alias'],
+      'fragment' => 'comment-form',
+      'attributes' => array('title' => t('Add a comment to this poll.')),
+    );
+
+  }
   $links[] = array(
     'title' => t('Older polls'),
     'href' => 'poll',
