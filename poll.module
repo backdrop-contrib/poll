@@ -709,6 +709,7 @@ function poll_block_latest_poll_view($node) {
  * Implements hook_view().
  */
 function poll_view($node, $view_mode) {
+  cache('cache_entity_node')->flush();
   if (!empty($node->allowvotes) && empty($node->show_results)) {
     $node->content['poll_view_voting'] = backdrop_get_form('poll_view_voting', $node);
   }
@@ -807,8 +808,6 @@ function poll_vote($form, &$form_state) {
     ->expression('chvotes', 'chvotes + 1')
     ->condition('chid', $choice)
     ->execute();
-
-  cache('cache_entity_node')->flush();
 
   if (!$user->uid) {
     // The vote is recorded so the user gets the result view instead of the
@@ -1007,7 +1006,6 @@ function poll_cancel($form, &$form_state) {
     ->execute();
 
   unset($_SESSION['poll_vote'][$node->nid]);
-  cache('cache_entity_node')->flush();
   backdrop_set_message(t('Your vote has been cancelled.'));
 }
 
