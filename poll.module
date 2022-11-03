@@ -668,7 +668,7 @@ function poll_block_latest_poll_view($node) {
   // as the node output.
   $node = clone $node;
   unset($node->content);
-  
+
   $links = array();
   if ($node->comment == '2') {
     $links[] = array(
@@ -677,7 +677,6 @@ function poll_block_latest_poll_view($node) {
       'fragment' => 'comment-form',
       'attributes' => array('title' => t('Add a comment to this poll.')),
     );
-
   }
   $links[] = array(
     'title' => t('Older polls'),
@@ -691,7 +690,6 @@ function poll_block_latest_poll_view($node) {
       'attributes' => array('title' => t('View the current poll results.')),
     );
   }
-
   $node->links = $links;
 
   if (!empty($node->allowvotes)) {
