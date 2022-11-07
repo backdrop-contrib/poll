@@ -138,6 +138,7 @@ function poll_block_info() {
  */
 function poll_block_view($delta = '') {
   if (user_access('access content')) {
+    cache('cache_entity_node')->flush();
     // Retrieve the latest poll.
     $select = db_select('node', 'n');
     $select->join('poll', 'p', 'p.nid = n.nid');
