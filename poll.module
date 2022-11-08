@@ -119,7 +119,7 @@ function poll_menu() {
  * Callback function to see if a node is acceptable for poll menu items.
  */
 function _poll_menu_access($node, $perm, $inspect_allowvotes) {
-  return user_access($perm) && ($node->type == 'poll') && ($node->allowvotes || !$inspect_allowvotes);
+  return user_access($perm) && ($node->type == 'poll') && (isset($node->allowvotes) || !$inspect_allowvotes);
 }
 
 /**
@@ -530,8 +530,15 @@ function poll_load($nodes) {
       ->orderBy('weight')
       ->execute()->fetchAllAssoc('chid', PDO::FETCH_ASSOC);
 
+    // Exit early if somehow poll node is missing poll choices.
+    if (empty($poll->choice)) {
+      form_set_error("poll", t('You must fill in at least two choices.'));
+      return;
+    }
+
     // Determine whether or not this user is allowed to vote.
     $poll->allowvotes = FALSE;
+
     if (user_access('vote on polls') && $poll->active) {
       if ($user->uid) {
         // If authenticated, find existing vote based on uid.
@@ -848,6 +855,12 @@ function template_preprocess_poll_vote(&$variables) {
  * Generates a graphical representation of the results of a poll.
  */
 function poll_view_results($node, $view_mode, $block = FALSE) {
+
+  // Exit early if somehow poll node is missing poll choices.
+  if (empty($node->choice)) {
+    form_set_error("poll", t('You must fill in at least two choices.'));
+    return;
+  }
   // Make sure that choices are ordered by their weight.
   backdrop_sort($node->choice, array('weight' => SORT_NUMERIC));
 
