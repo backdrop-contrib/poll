@@ -204,7 +204,6 @@ function poll_uninstall() {
   $result = $query->execute();
   if (!empty($result)) {
     $result = array_shift($result);
-    sdpm($result);
     foreach ($result as $id => $node) {
       $ids[] = $id;
     }
